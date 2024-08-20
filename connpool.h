@@ -10,6 +10,7 @@
 
 enum
 {
+  CONNPOOL_OK,
   CONNPOOL_ERR_MTX,
   CONNPOOL_ERR_COND,
   CONNPOOL_ERR_MALLOC,
@@ -37,12 +38,12 @@ struct connpool_conn_t
   connpool_conn_t *next;
 };
 
-void connpool_free (connpool_t *pool);
+extern void connpool_free (connpool_t *pool) attr_nonnull (1);
 
-PGconn *connpool_acquire (connpool_t *pool);
+extern PGconn *connpool_acquire (connpool_t *pool) attr_nonnull(1);
 
-void connpool_release (connpool_t *pool, PGconn *c);
+extern void connpool_release (connpool_t *pool, PGconn *c) attr_nonnull (1, 2);
 
-int connpool_init (connpool_t *pool, const char *info, size_t n);
+extern int connpool_init (connpool_t *pool, const char *info, size_t n) attr_nonnull (1, 2);
 
 #endif
