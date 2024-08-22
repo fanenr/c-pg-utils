@@ -8,7 +8,7 @@ LDFLAGS += -lpq
 .PHONY: all
 all: test
 
-test: main.o
+test: test.o connpool.o
 	gcc $(LDFLAGS) -o $@ $^
 
 %.o: %.c

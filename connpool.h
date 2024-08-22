@@ -40,10 +40,12 @@ struct connpool_conn_t
 
 extern void connpool_free (connpool_t *pool) attr_nonnull (1);
 
-extern PGconn *connpool_acquire (connpool_t *pool) attr_nonnull(1);
+extern connpool_conn_t *connpool_acquire (connpool_t *pool) attr_nonnull (1);
 
-extern void connpool_release (connpool_t *pool, PGconn *c) attr_nonnull (1, 2);
+extern void connpool_release (connpool_t *pool, connpool_conn_t *c)
+    attr_nonnull (1, 2);
 
-extern int connpool_init (connpool_t *pool, const char *info, size_t n) attr_nonnull (1, 2);
+extern int connpool_init (connpool_t *pool, const char *info, size_t n)
+    attr_nonnull (1, 2);
 
 #endif

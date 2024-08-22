@@ -9,18 +9,19 @@
 void
 connpool_free (connpool_t *pool)
 {
-  connpool_conn_t *conn;
+  connpool_conn_t *conn, *next;
   pthread_cond_destroy (&pool->cond);
   pthread_mutex_destroy (&pool->mtx);
 
-  for (conn = pool->head; conn; conn = conn->next)
+  for (conn = pool->head; conn; conn = next)
     {
       PQfinish (conn->conn);
+      next = conn->next;
       free (conn);
     }
 }
 
-PGconn *
+connpool_conn_t *
 connpool_acquire (connpool_t *pool)
 {
   connpool_conn_t *conn;
@@ -34,20 +35,19 @@ connpool_acquire (connpool_t *pool)
   pthread_mutex_unlock (&pool->mtx);
 
   conn->next = NULL;
-  return conn->conn;
+  return conn;
 }
 
 void
-connpool_release (connpool_t *pool, PGconn *c)
+connpool_release (connpool_t *pool, connpool_conn_t *c)
 {
   connpool_conn_t *tail;
-  connpool_conn_t *conn = container_of (c, connpool_conn_t, conn);
 
   pthread_mutex_lock (&pool->mtx);
   if ((tail = pool->tail))
-    pool->tail = tail->next = conn;
+    pool->tail = tail->next = c;
   else
-    pool->head = pool->tail = conn;
+    pool->head = pool->tail = c;
   pthread_mutex_unlock (&pool->mtx);
 
   pthread_cond_signal (&pool->cond);
